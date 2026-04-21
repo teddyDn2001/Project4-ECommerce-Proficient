@@ -1,0 +1,32 @@
+.DS_Store
+
+# env / secrets
+.env
+**/.env
+**/.env.*
+!.env.example
+
+# local CV exports / docs
+Resume_*.docx
+Resume_*.pdf
+
+# personal notes
+Record*/
+
+# python
+__pycache__/
+**/__pycache__/
+*.pyc
+.venv/
+venv/
+**/venv/
+**/.venv/
+
+# logs / outputs
+logs/
+**/logs/
+output/
+output_test/
+
+# misc
+.pytest_cache/

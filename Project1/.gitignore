@@ -1,0 +1,12 @@
+# File dữ liệu CSV (quá lớn, không cần commit)
+tmdb-movies.csv
+
+# Các file output cũ (nếu có)
+*.txt
+movies_*.csv
+
+# File tạm
+.DS_Store
+*.swp
+*.swo
+*~

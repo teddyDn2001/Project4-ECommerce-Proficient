@@ -1,0 +1,36 @@
+Project 04 – SQL (orders / order_item at scale)
+
+Prerequisites
+- PostgreSQL with Project3 base data: run Project3/schema_postgres.sql then Project3/generate_data.py
+- Use the same .env as Project3 (DB_HOST, DB_PORT, DB_NAME, DB_USER, DB_PASSWORD)
+
+Recommended order
+1) psql -f Project4/sql/00_prep_alter_tables.sql
+2) (Optional reset) TRUNCATE order_item, orders RESTART IDENTITY CASCADE;
+3) pip install -r Project4/requirements.txt
+4) Set ORDERS_COUNT (2500000–3000000). Quick test: ORDERS_COUNT=5000 BATCH_ORDERS=500
+   python Project4/generate_orders_project4.py
+5) psql -f Project4/sql/09_constraints_after_load.sql
+
+Benchmarks (Task 2)
+- Baseline: run queries in sql/20_analytical_queries.sql with EXPLAIN (ANALYZE, BUFFERS) and note timing (\timing on in psql).
+- Optional index before partitioning: sql/12_index_nonpartitioned_product.sql
+- Partition + index: sql/11_migrate_to_partitioned.sql (moves existing rows into monthly partitions; creates order_item(product_id) index)
+- Re-run the same EXPLAIN/timing and compare.
+
+Reports (Task 3)
+- psql -f Project4/sql/30_reports.sql
+- Optional procedure + cache table: sql/31_procedure_refresh_monthly_cache.sql
+- Examples:
+  SELECT * FROM report_monthly_revenue('2025-08-01', '2025-10-31');
+  SELECT * FROM report_daily_revenue('2025-08-01', '2025-10-31', ARRAY[1,2,3]);
+  SELECT * FROM report_seller_performance('2025-08-01', '2025-10-31', NULL, NULL);
+  SELECT * FROM report_top_products_per_brand('2025-08-01', '2025-10-31', 5, NULL);
+  SELECT * FROM report_orders_status_summary('2025-08-01', '2025-10-31', NULL, NULL);
+  CALL public.refresh_report_cache_monthly('2025-08-01', '2025-10-31');
+  SELECT * FROM public.report_cache_monthly ORDER BY month;
+
+Notes
+- Table name remains "orders" (PostgreSQL reserved word "order" avoided).
+- Promotion tables are not required for inserts; they stay available for future joins.
+- If you load into partitioned tables from scratch, you can run sql/10_partitioned_tables.sql on an EMPTY orders/order_item pair instead of migrate (then run the Python loader).
